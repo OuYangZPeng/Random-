@@ -1,0 +1,78 @@
+// Decompiled with JetBrains decompiler
+// Type:RandomC
+
+public class RandomC
+{
+  private ulong MAX_RANDOM_RANGE = (ulong) int.MaxValue;
+  private int m_idum = 0;
+  private int m_iy = 0;
+  private int[] m_iv = new int[32];
+  private const int NTAB = 32;
+
+  public virtual void OnInit(int iSeed)
+  {
+    this.SetSeed(iSeed);
+  }
+
+  public virtual void OnUnInit()
+  {
+    this.m_iv = (int[]) null;
+  }
+
+  public virtual void SetSeed(int iSeed)
+  {
+    this.m_idum = iSeed < 0 ? iSeed : -iSeed;
+    this.m_iy = 0;
+  }
+
+  public virtual int RandomInt(int iLow, int iHigh)
+  {
+    int num1 = iHigh - iLow + 1;
+    if (num1 <= 1 || this.MAX_RANDOM_RANGE < (ulong) (num1 - 1))
+      return iLow;
+    int num2 = (int) ((long) this.MAX_RANDOM_RANGE - (long) ((this.MAX_RANDOM_RANGE + 1UL) % (ulong) num1));
+    int randomNumber;
+    do
+    {
+      randomNumber = this.GenerateRandomNumber();
+    }
+    while (randomNumber > num2);
+    return iLow + randomNumber % num1;
+  }
+
+  public virtual int GetPRD_C(int iProbability)
+  {
+    return 0;
+  }
+
+  private int GenerateRandomNumber()
+  {
+    int num1 = 16807;
+    int maxValue = int.MaxValue;
+    int num2 = 127773;
+    int num3 = 2836;
+    if (this.m_idum <= 0 || this.m_iy == 0)
+    {
+      this.m_idum = -this.m_idum >= 1 ? -this.m_idum : 1;
+      for (int index = 39; index >= 0; --index)
+      {
+        int num4 = this.m_idum / num2;
+        this.m_idum = num1 * (this.m_idum - num4 * num2) - num3 * num4;
+        if (this.m_idum < 0)
+          this.m_idum += maxValue;
+        if (index < 32)
+          this.m_iv[index] = this.m_idum;
+      }
+      this.m_iy = this.m_iv[0];
+    }
+    int num5 = this.m_idum / num2;
+    this.m_idum = num1 * (this.m_idum - num5 * num2) - num3 * num5;
+    if (this.m_idum < 0)
+      this.m_idum += maxValue;
+    int index1 = this.m_iy / (1 + (maxValue - 1) / 32);
+    this.m_iy = this.m_iv[index1];
+    this.m_iv[index1] = this.m_idum;
+    return this.m_iy;
+  }
+}
+
